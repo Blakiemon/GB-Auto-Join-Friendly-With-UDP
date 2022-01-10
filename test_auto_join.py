@@ -12,6 +12,7 @@ async def invited_to_match(message):
     elif message['extCode'] == "FRIENDLY_MATCH_START_MATCHMAKING":
         print("Joining friendly match UDP.")
         asyncio.create_task(join_friendly.join_friendly(user_id=client.user_id, auth_token=client.auth_token, friendly_match_id=message['data']['match_id']))
+        await client.friendly_remove_player(match_id=message['data']['match_id'], player_id=client.user_id)
 
 @client.on_ready
 def ready():

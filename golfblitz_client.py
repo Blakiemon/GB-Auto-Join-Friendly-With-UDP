@@ -296,6 +296,32 @@ class Client:
             await asyncio.sleep(.1)
         return data
 
+    async def friendly_remove_player(self, match_id, player_id):
+        '''Remove player from friendly match'''
+
+        #Generate request id for websocket listener to compare with incoming websockets
+        request_id = generate_request_id()
+
+        #Add reference of variable to websocket id events for it to get changed when response comes through
+        self.websocket_id_events[request_id] = None
+
+        #Send request
+        await self.websocket.send(json.dumps({
+            "@class": ".LogEventRequest",
+            "eventKey": "FRIENDLY_MATCH_REMOVE_PLAYER",
+            "match_id": match_id,
+            "player_id": player_id,
+            "requestId": request_id
+        }))
+
+        data = None
+
+        while True:
+            data = self.websocket_id_events[request_id]
+            if data != None:
+                break 
+            await asyncio.sleep(.1)
+        return data
 
     async def get_current_team(self):
         '''Get info about the current team the account is on'''
